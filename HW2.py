@@ -16,8 +16,11 @@ __author__ = """\n""".join(['Griffin Fujioka (fujiokag@hotmail.com)'])
 
 import networkx as nx
 import shlex            # for parsing lines of text
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
+
 
 print 'Welcome to the Griffin Fujioka Twitter Data Mining Program!'
 print ''
@@ -34,6 +37,7 @@ temp = 0
 
 while 1:
     line = file.readline()
+    print line
     if not line:
         break       # We've read in all lines from the file 
     else:
@@ -99,8 +103,29 @@ ncc = nx.number_connected_components(H)
 
 print 'Number of connected components: ' + str(ncc)
 
+# Plot the degree distribution on a log-log graph
+degs = {}
+for n in g.nodes():
+    deg = g.degree(n)
+    if deg not in degs:
+        degs[deg] = 0
+
+    degs[deg] += 1
+
+items = sorted(degs.items())
+
+# Now we actually plot it
 print 'Drawing graph...'
-nx.draw(g)
-plt.savefig("graph.png")
-print 'Graph saved as graph.png'
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot([k for (k,v) in items], [v for (k,v) in items])
+ax.set_xscale('log')
+ax.set_yscale('log')
+plt.title("Twitter Dataset Degree Distribution")
+fig.savefig("degree_distribution.png")
+
+#print 'Drawing graph...'
+#nx.draw(g)
+#plt.savefig("graph.png")
+#print 'Graph saved as graph.png'
 
